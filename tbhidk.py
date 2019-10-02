@@ -13,6 +13,7 @@ BOT_PREFIX = '!'
 
 bot: Bot = commands.Bot(command_prefix=BOT_PREFIX)
 
+voice = None
 
 @bot.event
 async def on_ready():
@@ -27,6 +28,7 @@ async def _8ball(ctx, *, question):
 
 @bot.command(pass_context=True, aliases=['j'])
 async def join(ctx):
+    global voice
     channel = ctx.message.author.voice.channel
     voice = get(bot.voice_clients, guild=ctx.guild)
 
@@ -38,6 +40,7 @@ async def join(ctx):
 
 @bot.command(pass_context=True, aliases=['l', 'lea'])
 async def leave(ctx):
+    global voice
     channel = ctx.message.author.voice.channel
     voice = get(bot.voice_clients, guild=ctx.guild)
 
@@ -62,8 +65,6 @@ async def play(ctx, url: str):
         return
 
     await ctx.send("Getting everything ready now")
-
-    voice = get(bot.voice_clients, guild=ctx.guild)
 
     ydl_opts = {
         'format': 'bestaudio/best',
