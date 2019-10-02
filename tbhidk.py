@@ -27,8 +27,9 @@ async def _8ball(ctx, *, question):
 
 
 @bot.command(pass_context=True, aliases=['j'])
+
+@bot.command(pass_context=True, aliases=['j', 'joi'])
 async def join(ctx):
-    global voice
     channel = ctx.message.author.voice.channel
     voice = get(bot.voice_clients, guild=ctx.guild)
 
@@ -37,6 +38,15 @@ async def join(ctx):
     else:
         voice = await channel.connect()
 
+    await voice.disconnect()
+
+    if voice and voice.is_connected():
+        await voice.move_to(channel)
+    else:
+        voice = await channel.connect()
+        print(f"The bot has connected to {channel}\n")
+
+    await ctx.send(f"Joined {channel}")
 
 @bot.command(pass_context=True, aliases=['l', 'lea'])
 async def leave(ctx):
