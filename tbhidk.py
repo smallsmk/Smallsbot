@@ -1,13 +1,14 @@
+import os
+import random
+
 import discord
+import youtube_dl
 from discord.ext import commands
 from discord.ext.commands import Bot
 from discord.utils import get
-import youtube_dl
-import random
-import ffmpeg
-import os
 
-TOKEN = 'NjI4MzI4ODE1NzAxMjYyMzU2.XZKLOw.VIy8jYf6oxJeABwtwISqBgr_LHg'
+from Token import token
+
 BOT_PREFIX = '!'
 
 bot: Bot = commands.Bot(command_prefix=BOT_PREFIX)
@@ -92,4 +93,4 @@ async def play(ctx, url: str):
     print("playing\n")
 
 
-bot.run(TOKEN)
+bot.run(token)
