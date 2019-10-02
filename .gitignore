@@ -1,5 +1,5 @@
-venv/
-.idea
+
+.idea/
 *.WEBM
 testing.py
 Token.py
