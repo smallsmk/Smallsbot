@@ -25,9 +25,6 @@ async def _8ball(ctx, *, question):
     responses = ['idk', 'maybe', 'yes', 'no', 'im just a bot ok?', 'im not your mom', 'f"yolo"']
     await ctx.send(f'Answer: {random.choice(responses)}')
 
-
-@bot.command(pass_context=True, aliases=['j'])
-
 @bot.command(pass_context=True, aliases=['j', 'joi'])
 async def join(ctx):
     channel = ctx.message.author.voice.channel
