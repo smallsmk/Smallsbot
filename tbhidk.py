@@ -93,4 +93,7 @@ async def play(ctx, url: str):
     print("playing\n")
 
 
-bot.run(token)
+try:
+    bot.run(token)
+except discord.errors.LoginFailure:
+    print("Please make sure the token is correct in the Token.py file")
