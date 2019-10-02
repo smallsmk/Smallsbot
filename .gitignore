@@ -1,6 +1,7 @@
-
 .idea/
-*.WEBM
+*.webm
+*.mp3
 testing.py
 Token.py
 __pycache__/
+
