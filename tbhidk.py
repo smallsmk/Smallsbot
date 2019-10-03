@@ -72,7 +72,9 @@ def play_done(ctx, loop, name):
 
 
 def play_next(ctx, loop):
-    if len(playlist) == 0 or voice.is_playing():
+    if voice.is_playing():
+        return
+    elif len(playlist) == 0 :
         loop.create_task(ctx.send(f"Done playing"))
         print("Done playing\n")
         return
