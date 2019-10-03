@@ -1,3 +1,4 @@
+import asyncio
 import os
 import random
 
@@ -15,6 +16,7 @@ BOT_PREFIX = '!'
 bot: Bot = commands.Bot(command_prefix=BOT_PREFIX)
 client = bot
 voice = None
+playlist = []
 
 
 @bot.event
@@ -64,6 +66,29 @@ async def leave(ctx):
         await ctx.send("I'm not in a channel ;A;")
 
 
+def play_done(ctx, loop, name):
+    loop.create_task(ctx.send(f"Finished playing: {name[0]}"))
+    play_next(ctx, loop)
+
+
+def play_next(ctx, loop):
+    if len(playlist) == 0 or voice.is_playing():
+        loop.create_task(ctx.send(f"Done playing"))
+        print("Done playing\n")
+        return
+
+    file = playlist.pop()
+
+    voice.play(discord.FFmpegPCMAudio(f"./music/{file}"), after=lambda e: play_done(ctx, loop, name))
+    voice.source = discord.PCMVolumeTransformer(voice.source)
+    voice.source.volume = 0.07
+
+    name = file.rsplit("-", 2)
+
+    loop.create_task(ctx.send(f"Playing: {name[0]}"))
+    print(f"Playing: {name[0]}\n")
+
+
 @bot.command(pass_context=True, aliases=['p'])
 async def play(ctx, url: str):
     song_there = os.path.isfile("song.mp3")
@@ -93,17 +118,14 @@ async def play(ctx, url: str):
 
     for file in os.listdir("./"):
         if file.endswith(".mp3"):
-            name = file
-            print(f"Renamed File: {file}\n")
-            os.rename(file, "song.mp3")
+            playlist.append(file)
+            print(playlist)
+            try:
+                os.renames(file, f"./music/{file}")
+            except FileExistsError:
+                os.remove(file)
 
-    voice.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda e: print("Song done!"))
-    voice.source = discord.PCMVolumeTransformer(voice.source)
-    voice.source.volume = 0.07
-
-    nname = name.rsplit("-", 2)
-    await ctx.send(f"Playing: {nname[0]}")
-    print("playing\n")
+    play_next(ctx, asyncio.get_event_loop())
 
 
 @bot.command(pass_context=True, aliases=['pa'])
