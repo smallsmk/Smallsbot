@@ -3,6 +3,7 @@ import random
 
 import discord
 import youtube_dl
+
 from discord.ext import commands
 from discord.ext.commands import Bot
 from discord.utils import get
@@ -12,8 +13,9 @@ from Token import token
 BOT_PREFIX = '!'
 
 bot: Bot = commands.Bot(command_prefix=BOT_PREFIX)
-
+client = bot
 voice = None
+
 
 @bot.event
 async def on_ready():
@@ -25,8 +27,10 @@ async def _8ball(ctx, *, question):
     responses = ['idk', 'maybe', 'yes', 'no', 'im just a bot ok?', 'im not your mom', 'f"yolo"']
     await ctx.send(f'Answer: {random.choice(responses)}')
 
+
 @bot.command(pass_context=True, aliases=['j', 'joi'])
 async def join(ctx):
+    global voice
     channel = ctx.message.author.voice.channel
     voice = get(bot.voice_clients, guild=ctx.guild)
 
@@ -45,7 +49,8 @@ async def join(ctx):
 
     await ctx.send(f"Joined {channel}")
 
-@bot.command(pass_context=True, aliases=['l', 'lea'])
+
+@bot.command(pass_context=True, aliases=['l'])
 async def leave(ctx):
     global voice
     channel = ctx.message.author.voice.channel
@@ -59,7 +64,7 @@ async def leave(ctx):
         await ctx.send("I'm not in a channel ;A;")
 
 
-@bot.command(pass_context=True, aliases=['p', 'pla'])
+@bot.command(pass_context=True, aliases=['p'])
 async def play(ctx, url: str):
     song_there = os.path.isfile("song.mp3")
     try:
@@ -101,7 +106,40 @@ async def play(ctx, url: str):
     print("playing\n")
 
 
-try:
-    bot.run(token)
-except discord.errors.LoginFailure:
-    print("Please make sure the token is correct in the Token.py file")
+@bot.command(pass_context=True, aliases=['pa'])
+async def pause(ctx):
+    global voice
+    voice = get(bot.voice_clients, guild=ctx.guild)
+
+    if voice and voice.is_playing():
+        print("paused")
+        voice.pause()
+        await ctx.send("Paused")
+    else:
+        await ctx.send("I'm not playing anything")
+
+
+@bot.command(pass_context=True, aliases=['r', 're'])
+async def resume(ctx):
+    global voice
+    voice = get(bot.voice_clients, guild=ctx.guild)
+
+    if voice and voice.is_paused():
+        print("resuming")
+        voice.resume()
+        await ctx.send("Resuming")
+    else:
+        await ctx.send("Nothing is paused")
+
+
+@bot.command(pass_context=True, aliases=['s', 'st'])
+async def stop(ctx):
+    global voice
+    voice = get(bot.voice_clients, guild=ctx.guild)
+
+    if voice and voice.is_playing():
+        print("stopping")
+        voice.stop()
+
+
+bot.run(token)
